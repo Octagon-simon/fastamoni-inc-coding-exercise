@@ -16,7 +16,7 @@ authRouter.post('/signup', async (req, res) => {
         //sanitize and trim
         username = username.trim();
         password = password.trim();
-        email = email.trim();
+        email = email.trim()?.toLowerCase();
 
         //check if params are empty
         if (!username || !password || !email) {

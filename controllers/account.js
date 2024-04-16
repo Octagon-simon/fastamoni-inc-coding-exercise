@@ -97,8 +97,8 @@ accountRouter.post('/createWallet', async (req, res) => {
         //destructure payload
         let { wallet_name } = req.body;
 
-        //sanitize and validate
-        wallet_name = wallet_name.trim();
+        //sanitize and validate, then convert to uppercase
+        wallet_name = wallet_name.trim()?.toUpperCase();
 
         //check if wallet name is valid
         if (!wallet_name) {
@@ -110,10 +110,10 @@ accountRouter.post('/createWallet', async (req, res) => {
             })
         }
 
-        //check if wallet name already exists
-        const walletExists = await dbQuery('SELECT * FROM wallets WHERE wallet_name = ? LIMIT 1', [wallet_name])
+        //check if wallet name is supported
+        const walletIsSupported = await dbQuery('SELECT * FROM wallets WHERE wallet_name = ? LIMIT 1', [wallet_name])
 
-        if (!walletExists || !walletExists.length) {
+        if (!walletIsSupported || !walletIsSupported.length) {
             return res.status(400).json({
                 status: false,
                 error: {
@@ -123,7 +123,19 @@ accountRouter.post('/createWallet', async (req, res) => {
         }
 
         //get wallet Id
-        const { wallet_id } = walletExists[0];
+        const { wallet_id } = walletIsSupported[0];
+
+        //check if user has created this wallet already
+        const hasCreatedWallet = await dbQuery('SELECT * FROM userWallets WHERE wallet_id = ? AND user_id = ? LIMIT 1', [wallet_id, req.user.user_id])
+
+        if (hasCreatedWallet && hasCreatedWallet.length) {
+            return res.status(400).json({
+                status: false,
+                error: {
+                    message: `You have already created ${wallet_name} wallet already`
+                }
+            });
+        }
 
         //create wallet for this user
         const createWallet = await dbQuery('INSERT INTO userWallets (wallet_id, user_id) VALUES (?, ?)', [wallet_id, req.user.user_id])
