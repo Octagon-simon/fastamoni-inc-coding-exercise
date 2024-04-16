@@ -1,6 +1,6 @@
 import express, { json } from 'express';
 import dotenv from 'dotenv';
-import authRouter from './controllers/authRouter.js';
+import authRouter from './controllers/auth.js';
 
 //configure access to env variables
 dotenv.config();

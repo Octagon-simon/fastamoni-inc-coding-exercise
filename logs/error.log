@@ -1,0 +1,4 @@
+2024-04-16T09:42:26.010Z - jwt is not defined
+ReferenceError: jwt is not defined
+    at file:///home/octagon/Documents/github/fastMoni/controllers/authRouter.js:174:23
+
