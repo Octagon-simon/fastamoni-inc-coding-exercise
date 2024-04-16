@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 // Function to log errors
 function logError(error) {
     try {
@@ -15,4 +17,8 @@ function logError(error) {
     } catch (err) {
         console.error('Error logging error:', err);
     }
+}
+
+export {
+    logError
 }
