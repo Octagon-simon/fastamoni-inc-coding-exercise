@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import authRouter from './controllers/auth.js';
 import accountRouter from './controllers/account.js';
 import beneficiaryRouter from './controllers/beneficiary.js';
+import walletRouter from './controllers/wallet.js';
 
 //configure access to env variables
 dotenv.config();
@@ -18,6 +19,10 @@ app.use('/api/auth/', authRouter);
 
 //configure authentication route
 app.use('/api/account/', accountRouter);
+
+//configure beneficiary route
+app.use('/api/wallets/', walletRouter);
+
 
 //configure beneficiary route
 app.use('/api/beneficiary/', beneficiaryRouter);

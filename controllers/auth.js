@@ -6,6 +6,50 @@ import Jwt from "jsonwebtoken"
 //create new routes for authentication
 const authRouter = Router();
 
+//modular function for creating a new wallet
+const createWallet = async (user_id) => {
+    try {
+
+        //check if userId was provided
+        if (typeof user_id == 'undefined') throw new Error("A valid user_id must be provided");
+
+        //default wallet name
+        const wallet_name = "NGN";
+
+        //check if user has created this wallet already
+        const hasCreatedWallet = await dbQuery('SELECT * FROM userWallets WHERE wallet_name = ? AND user_id = ? LIMIT 1', [wallet_name, user_id])
+
+        if (hasCreatedWallet && hasCreatedWallet.length) {
+            return {
+                status: false,
+                error: {
+                    message: `This user has ${wallet_name} wallet already`
+                }
+            }
+        }
+
+        //create wallet for this user
+        const createWallet = await dbQuery('INSERT INTO userWallets (wallet_name, user_id) VALUES (?, ?)', [wallet_name, user_id])
+
+        //check if operation was successful
+        if (createWallet.affectedRows <= 0) {
+            return {
+                status: false,
+                error: {
+                    message: `This User's ${wallet_name} wallet was not created, please contact support`
+                }
+            }
+        }
+
+        return {
+            status: true,
+            message: `User's ${wallet_name} wallet has been created successfully`
+        }
+    } catch (err) {
+        throw new Error(err)
+    }
+}
+
 authRouter.post('/signup', async (req, res) => {
 
     try {
@@ -57,8 +101,11 @@ authRouter.post('/signup', async (req, res) => {
         // Create new user
         const createUser = await dbQuery('INSERT INTO users (username, email, secret) VALUES (?, ?, ?)', [username, email, hashedPassword]);
 
+        //destructure response
+        const { affectedRows, insertId: user_id } = createUser
+
         // Check if user was created
-        if (createUser.affectedRows <= 0) {
+        if (affectedRows <= 0) {
             return res.status(500).json({
                 status: false,
                 error: {
@@ -67,6 +114,10 @@ authRouter.post('/signup', async (req, res) => {
             });
         }
 
+        //attempt to create wallet for this user
+        await createWallet(user_id)
+
+        //return success
         return res.status(200).json({
             status: true,
             message: 'Account created successfully'
@@ -130,7 +181,7 @@ authRouter.post('/login', async (req, res) => {
         const { user_id, secret } = emailExists?.[0] ?? {}
 
         //compare the password
-        if(await compareHashedUserInput(password, secret) === false){
+        if (await compareHashedUserInput(password, secret) === false) {
             return res.status(400).json({
                 status: false,
                 error: {
@@ -145,9 +196,9 @@ authRouter.post('/login', async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'You are now logged in',
-            data : {
+            data: {
                 authToken: token
-            
+
             }
         });
     } catch (err) {
