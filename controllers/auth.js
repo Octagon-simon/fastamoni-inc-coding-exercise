@@ -58,7 +58,7 @@ authRouter.post('/signup', async (req, res) => {
         const createUser = await dbQuery('INSERT INTO users (username, email, secret) VALUES (?, ?, ?)', [username, email, hashedPassword]);
 
         // Check if user was created
-        if (createUser.affectedRows <= 0) { // If no rows were affected
+        if (createUser.affectedRows <= 0) {
             return res.status(500).json({
                 status: false,
                 error: {

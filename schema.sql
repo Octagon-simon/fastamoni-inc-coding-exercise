@@ -7,7 +7,7 @@ USE fastMoni;
 -- Create Wallets Table
 CREATE TABLE IF NOT EXISTS wallets (
     wallet_id INT AUTO_INCREMENT PRIMARY KEY,
-    walletName VARCHAR(50) NOT NULL,
+    wallet_name VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

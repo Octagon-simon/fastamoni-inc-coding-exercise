@@ -9,6 +9,16 @@ const accountRouter = Router();
 //user must be logged in
 accountRouter.use(isAuthenticated)
 
+//modular function for retrieving all wallets and their ID
+const getAllWallets = async () => {
+    try {
+        const wallets = await dbQuery('SELECT * FROM wallets')
+        return wallets
+    } catch (err) {
+        logError(err)
+    }
+}
+
 //endpoint for creating PIN
 accountRouter.post('/createPin', async (req, res) => {
     try {
@@ -19,9 +29,9 @@ accountRouter.post('/createPin', async (req, res) => {
         pin = pin.trim();
 
         //check if pin is valid digits
-        if(!/[0-9]/.test(Number(pin))){
+        if (!/[0-9]/.test(Number(pin))) {
             return res.status(400).json({
-                success : false,
+                success: false,
                 error: {
                     message: 'PIN must be at least 4 digits'
                 }
@@ -29,7 +39,7 @@ accountRouter.post('/createPin', async (req, res) => {
         }
 
         //check if pin length is less than 4 digits
-        if(pin.length < 4){
+        if (pin.length < 4) {
             return res.status(400).json({
                 status: false,
                 error: {
@@ -41,7 +51,7 @@ accountRouter.post('/createPin', async (req, res) => {
         //confirm if the user has not created a PIN before
         const hasCreatedPIN = await dbQuery('SELECT pin FROM users WHERE user_id = ? AND pin IS NOT NULL LIMIT 1', [req.user.user_id])
 
-        if(hasCreatedPIN && hasCreatedPIN.length){
+        if (hasCreatedPIN && hasCreatedPIN.length) {
             return res.status(400).json({
                 status: false,
                 error: {
@@ -56,7 +66,7 @@ accountRouter.post('/createPin', async (req, res) => {
         //update user's details
         const updateUser = await dbQuery('UPDATE users SET pin = ? WHERE user_id = ?', [hashedPIN, req.user.user_id])
 
-        if(!updateUser){
+        if (!updateUser) {
             return res.status(400).json({
                 status: false,
                 error: {
@@ -69,7 +79,7 @@ accountRouter.post('/createPin', async (req, res) => {
             success: true,
             message: 'Your PIN has been created successfully',
         })
-        
+
     } catch (err) {
         logError(err)
         return res.status(500).json({
@@ -81,4 +91,65 @@ accountRouter.post('/createPin', async (req, res) => {
     }
 })
 
+//endpoint for creating a new wallet
+accountRouter.post('/createWallet', async (req, res) => {
+    try {
+        //destructure payload
+        let { wallet_name } = req.body;
+
+        //sanitize and validate
+        wallet_name = wallet_name.trim();
+
+        //check if wallet name is valid
+        if (!wallet_name) {
+            return res.status(400).json({
+                success: false,
+                error: {
+                    message: 'Please provide a wallet name'
+                }
+            })
+        }
+
+        //check if wallet name already exists
+        const walletExists = await dbQuery('SELECT * FROM wallets WHERE wallet_name = ? LIMIT 1', [wallet_name])
+
+        if (!walletExists || !walletExists.length) {
+            return res.status(400).json({
+                status: false,
+                error: {
+                    message: 'The wallet you are trying to create is not currently supported.'
+                }
+            })
+        }
+
+        //get wallet Id
+        const { wallet_id } = walletExists[0];
+
+        //create wallet for this user
+        const createWallet = await dbQuery('INSERT INTO userWallets (wallet_id, user_id) VALUES (?, ?)', [wallet_id, req.user.user_id])
+
+        //check if operation was successful
+        if (createWallet.affectedRows <= 0) {
+            return res.status(500).json({
+                status: false,
+                error: {
+                    message: 'Your wallet was not created, please contact support'
+                }
+            });
+        }
+
+        return res.status(200).json({
+            status: true,
+            message: 'Your wallet has been created successfully'
+        });
+    } catch (err) {
+        logError(err);
+        return res.status(500).json({
+            success: false,
+            error: {
+                message: "A server error has occured, please contact support"
+            }
+        })
+    }
+})
 export default accountRouter;
