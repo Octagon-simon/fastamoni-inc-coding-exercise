@@ -25,9 +25,6 @@ accountRouter.post('/createPin', async (req, res) => {
         //destructure payload
         let { pin } = req.body;
 
-        //sanitize and validate
-        pin = pin.trim();
-
         //check if pin is valid digits
         if (!/[0-9]/.test(Number(pin))) {
             return res.status(400).json({
@@ -37,6 +34,9 @@ accountRouter.post('/createPin', async (req, res) => {
                 }
             })
         }
+
+        //sanitize and validate
+        pin = pin.trim();
 
         //check if pin length is less than 4 digits
         if (pin.length < 4) {

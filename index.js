@@ -4,6 +4,7 @@ import authRouter from './controllers/auth.js';
 import accountRouter from './controllers/account.js';
 import beneficiaryRouter from './controllers/beneficiary.js';
 import walletRouter from './controllers/wallet.js';
+import donationRouter from './controllers/donation.js';
 
 //configure access to env variables
 dotenv.config();
@@ -22,6 +23,9 @@ app.use('/api/account/', accountRouter);
 
 //configure beneficiary route
 app.use('/api/wallets/', walletRouter);
+
+//configure donations route
+app.use('/api/donations/', donationRouter);
 
 
 //configure beneficiary route

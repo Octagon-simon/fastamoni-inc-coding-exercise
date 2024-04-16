@@ -57,11 +57,6 @@ authRouter.post('/signup', async (req, res) => {
         //destructure payload
         let { username = '', email = '', password = '' } = req.body;
 
-        //sanitize and trim
-        username = username.trim();
-        password = password.trim();
-        email = email.trim()?.toLowerCase();
-
         //check if params are empty
         if (!username || !password || !email) {
             return res.status(400).json({
@@ -71,6 +66,12 @@ authRouter.post('/signup', async (req, res) => {
                 }
             });
         }
+
+        //sanitize and trim
+        username = username.trim();
+        password = password.trim();
+        email = email.trim()?.toLowerCase();
+
 
         //validate email address
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -139,10 +140,6 @@ authRouter.post('/login', async (req, res) => {
         //destructure payload
         let { email = '', password = '' } = req.body;
 
-        //sanitize and trim
-        email = email.trim();
-        password = password.trim();
-
         //check if params are empty
         if (!password || !email) {
             return res.status(400).json({
@@ -152,6 +149,10 @@ authRouter.post('/login', async (req, res) => {
                 }
             });
         }
+
+        //sanitize and trim
+        email = email.trim();
+        password = password.trim();
 
         //validate email address
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

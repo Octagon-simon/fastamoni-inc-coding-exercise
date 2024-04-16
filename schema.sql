@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Create User Wallets Table
 CREATE TABLE IF NOT EXISTS userWallets (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    wallet_id INT AUTO_INCREMENT PRIMARY KEY,
     wallet_name VARCHAR(5) NOT NULL,
     user_id INT NOT NULL,
     balance DECIMAL(10, 2) DEFAULT 500000,
@@ -25,16 +25,28 @@ CREATE TABLE IF NOT EXISTS userWallets (
 );
 
 
--- Create Beneficiaries Table
-CREATE TABLE IF NOT EXISTS beneficiaries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+-- -- Create Beneficiaries Table
+-- CREATE TABLE IF NOT EXISTS beneficiaries (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT NOT NULL,
+--     beneficiary_id INT NOT NULL,
+--     email VARCHAR(100) NOT NULL,
+--     legal_name VARCHAR(100) NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id) REFERENCES users(user_id),
+--     FOREIGN KEY (beneficiary_id) REFERENCES users(user_id)
+-- );
+
+-- Create Donations Table
+CREATE TABLE IF NOT EXISTS donations (
+    donation_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    beneficiary_id INT NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    legal_name VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(10) DEFAULT 'pending',
+    donation_date DATE DEFAULT CURRENT_DATE,
+    recipient_id INT NOT NULL, -- Opposite of donor_id which is our user_id, representing the recipient of the donation
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (beneficiary_id) REFERENCES users(user_id)
+    FOREIGN KEY (recipient_id) REFERENCES users(user_id)
 );
 
 
