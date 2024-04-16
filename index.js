@@ -1,6 +1,7 @@
 import express, { json } from 'express';
 import dotenv from 'dotenv';
 import authRouter from './controllers/auth.js';
+import accountRouter from './controllers/account.js';
 
 //configure access to env variables
 dotenv.config();
@@ -13,6 +14,9 @@ app.use(json());
 
 //configure authentication route
 app.use('/api/auth/', authRouter);
+
+//configure authentication route
+app.use('/api/account/', accountRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');

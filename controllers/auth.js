@@ -1,42 +1,10 @@
 import { Router } from "express";
 import dbQuery from "../utils/db.js";
-import { logError } from "../core/functions.js";
-import bcrypt from 'bcrypt';
+import { compareHashedUserInput, hashUserInput, logError } from "../core/functions.js";
 import Jwt from "jsonwebtoken"
 
 //create new routes for authentication
 const authRouter = Router();
-
-//define modular functions
-
-/**
- * This function is responsible for hashing the password of the user
- * @param {string} password 
- * @returns String
- */
-const hashPassword = async (password) => {
-    try {
-        const saltRounds = 10;
-        //hash and return response
-        return await bcrypt.hash(password, saltRounds)
-    } catch (err) {
-        throw new Error(`An error occurred while trying to hash the password: ${err.message}`);
-    }
-}
-
-/**
- * This function is responsible for comparing the password of the user against the stored password
- * @param {string} userPassword 
- * @param {string} hashedPassword 
- * @returns Boolean 
- */
-const comparePassword = async (userPassword, hashedPassword) => {
-    try {
-        return await bcrypt.compare(userPassword, hashedPassword)
-    } catch (err) {
-        throw new Error(`An error occurred while trying to hash the password: ${err.message}`);
-    }
-}
 
 authRouter.post('/signup', async (req, res) => {
 
@@ -84,7 +52,7 @@ authRouter.post('/signup', async (req, res) => {
         }
 
         //hash user's password
-        const hashedPassword = await hashPassword(password);
+        const hashedPassword = await hashUserInput(password);
 
         // Create new user
         const createUser = await dbQuery('INSERT INTO users (username, email, secret) VALUES (?, ?, ?)', [username, email, hashedPassword]);
@@ -162,7 +130,7 @@ authRouter.post('/login', async (req, res) => {
         const { user_id, secret } = emailExists?.[0] ?? {}
 
         //compare the password
-        if(await comparePassword(password, secret) === false){
+        if(await compareHashedUserInput(password, secret) === false){
             return res.status(400).json({
                 status: false,
                 error: {

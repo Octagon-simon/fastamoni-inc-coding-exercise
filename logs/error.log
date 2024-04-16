@@ -2,3 +2,42 @@
 ReferenceError: jwt is not defined
     at file:///home/octagon/Documents/github/fastMoni/controllers/authRouter.js:174:23
 
+2024-04-16T10:29:28.288Z - An error occurred while trying to hash the password: data must be a string or Buffer and salt must either be a salt string or a number of rounds
+Error: An error occurred while trying to hash the password: data must be a string or Buffer and salt must either be a salt string or a number of rounds
+    at hashUserInput (file:///home/octagon/Documents/github/fastMoni/core/functions.js:33:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///home/octagon/Documents/github/fastMoni/controllers/account.js:42:27
+
+2024-04-16T10:30:42.778Z - userInput must be a string
+Error: userInput must be a string
+    at hashUserInput (file:///home/octagon/Documents/github/fastMoni/core/functions.js:30:46)
+    at file:///home/octagon/Documents/github/fastMoni/controllers/account.js:42:33
+    at Layer.handle [as handle_request] (/home/octagon/Documents/github/fastMoni/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/octagon/Documents/github/fastMoni/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/octagon/Documents/github/fastMoni/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/octagon/Documents/github/fastMoni/node_modules/express/lib/router/layer.js:95:5)
+    at /home/octagon/Documents/github/fastMoni/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/home/octagon/Documents/github/fastMoni/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/octagon/Documents/github/fastMoni/node_modules/express/lib/router/index.js:280:10)
+    at default (file:///home/octagon/Documents/github/fastMoni/middlewares/isAuthenticated.js:37:20)
+
+2024-04-16T10:32:02.211Z - ER_BAD_FIELD_ERROR: Unknown column 'pin' in 'field list'
+Error: ER_BAD_FIELD_ERROR: Unknown column 'pin' in 'field list'
+    at Sequence._packetToError (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/protocol/sequences/Sequence.js:47:14)
+    at Query.ErrorPacket (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/protocol/sequences/Query.js:79:18)
+    at Protocol._parsePacket (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/protocol/Protocol.js:291:23)
+    at Parser._parsePacket (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/protocol/Parser.js:433:10)
+    at Parser.write (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/protocol/Parser.js:43:10)
+    at Protocol.write (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/protocol/Protocol.js:38:16)
+    at Socket.<anonymous> (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/Connection.js:88:28)
+    at Socket.<anonymous> (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/Connection.js:526:10)
+    at Socket.emit (node:events:517:28)
+    at addChunk (node:internal/streams/readable:368:12)
+    --------------------
+    at Protocol._enqueue (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/protocol/Protocol.js:144:48)
+    at Connection.query (/home/octagon/Documents/github/fastMoni/node_modules/mysql/lib/Connection.js:198:25)
+    at node:internal/util:441:7
+    at new Promise (<anonymous>)
+    at Connection.query (node:internal/util:427:12)
+    at file:///home/octagon/Documents/github/fastMoni/controllers/account.js:45:34
+

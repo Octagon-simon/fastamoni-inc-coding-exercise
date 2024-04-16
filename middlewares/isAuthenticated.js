@@ -1,5 +1,5 @@
 import Jwt from "jsonwebtoken"
-import { logError } from "../../core/functions.js"
+import { logError } from "../core/functions.js"
 import dbQuery from "../utils/db.js";
 
 export default async (req, res, next) => {
