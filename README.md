@@ -22,29 +22,45 @@ Below you can see the available endpoints and what they do.
 
 - `/auth/signup` This endpoint enables a user to sign up on the server. It does not require authentication.
 
+    - Request Method: `POST`
+
 - `/auth/login` This endpoint enables a user to login to his account on the server. It does not require authentication.
+    
+    - Request Method: `POST`
 
     - Once a user is logged in, an `accessToken` will be returned and you need to pass in this token to the request header as a bearer token in order to be **authenticated**. For example: `Bearer uytrFGBVCDRUI7654567yGBN8754rg...` 
 
 - `/account/createPIN` This endpoint enables a loggedIn user to create a transaction PIN. It requires authentication.
+    
+    - Request Method: `POST`
   
-  - With this PIN, the user can be able to donate some money to a beneficiary (another user)
+    - With this PIN, the user can be able to donate some money to a beneficiary (another user)
 
 - `/wallets/getBalance` This endpoint enables a user to retrieve his wallet balance. It requires authentication.
+
+    - Request Method: `GET`
   
-  - Once a user signs up on the server, an `NGN` wallet is automatically created with a default balance of `500,000` and this is enough to test donations to a different user.
+    - Once a user signs up on the server, an `NGN` wallet is automatically created with a default balance of `500,000` and this is enough to test donations to a different user.
 
 - `/donations/create` This endpoint enables a user to create a donation to a different user (beneficiary). It requires authentication
 
-  - Before a donation is created, you must set up a PIN because this PIN will be used to verify and authenticate the user as funds are about to leave his wallet.
+    - Request Method: `POST`
+
+    - Before a donation is created, you must set up a PIN because this PIN will be used to verify and authenticate the user as funds are about to leave his wallet.
 
 - `/donations/getAll` This endpoint enables a user to get the records of all donations he has made.
+
+    - Request Method: `GET`
 
     - You can filter the records by the date and it supports pagination too. Please refer to `fastaMoni.postman_collection.json` for more information
 
 - `/donations/getSingle` This endpoint enables a user to retrieve a single donation using the ID of the donation.
 
+    - Request Method: `GET`
+
 - `/donations/total` This endpoint enables a user to get the total donations he has made
+  
+    - Request Method: `GET`
 
 ## WHAT YOU CAN DO
 
