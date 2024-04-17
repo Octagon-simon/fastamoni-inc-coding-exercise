@@ -11,6 +11,9 @@ dotenv.config();
 //create new express app
 const app = express();
 
+//set the port number
+const port = process.env.PORT || 5000;
+
 //configure app to parse request as JSON
 app.use(json());
 
@@ -33,6 +36,6 @@ app.use('/api/wallets/', walletRouter);
 //configure donations route
 app.use('/api/donations/', donationRouter);
 
-app.listen(5000, () => {
-    console.log('Example app listening on port 5000!');
+app.listen(port, () => {
+    console.log(`App is live on port ${port}`);
 });
