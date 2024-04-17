@@ -57,8 +57,29 @@ const compareHashedUserInput = async (userInput, hashedString) => {
     }
 }
 
+/**
+ * This function formats date to 'YYYY-MM-DD'
+ * @param {*} inputDate 
+ * @returns 
+ */
+const formatDate = (inputDate) => {
+    try {
+        const dateObj = new Date(inputDate);
+
+        const year = dateObj.getFullYear();
+
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+
+        const day = String(dateObj.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    } catch (e) {
+        throw new Error(e)
+    }
+}
 export {
     compareHashedUserInput,
+    formatDate,
     hashUserInput,
     logError
 }

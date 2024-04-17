@@ -1,6 +1,6 @@
 import { Router } from "express";
 import dbQuery from "../utils/db.js";
-import { compareHashedUserInput, logError } from "../core/functions.js";
+import { compareHashedUserInput, formatDate, logError } from "../core/functions.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 
 //create new routes for authentication
@@ -157,6 +157,82 @@ donationRouter.post('/create', async (req, res) => {
         return res.status(200).json({
             status: true,
             message: 'Your donation has been created successfully'
+        });
+
+    } catch (err) {
+        logError(err);
+        return res.status(500).json({
+            success: false,
+            error: {
+                message: "A server error has occured, please contact support"
+            }
+        })
+    }
+})
+
+//create route to get total donations
+donationRouter.get('/totalDonations', async (req, res) => {
+    try {
+
+        const totalDonations = await dbQuery('SELECT COUNT(*) as total FROM donations WHERE user_id = ?', [req.user.user_id]);
+
+        //get response from db
+        const { total } = totalDonations?.[0] || 0
+
+        return res.status(200).json({
+            status: true,
+            data: {
+                totalDonations: total
+            }
+        });
+
+    } catch (err) {
+        logError(err);
+        return res.status(500).json({
+            success: false,
+            error: {
+                message: "A server error has occured, please contact support"
+            }
+        })
+    }
+})
+
+donationRouter.get('/getDonations', async (req, res) => {
+    try {
+
+        //destructure query parameters
+        let { date } = req.query;        //2024-04-17
+
+        //sanitize param
+        date = date?.trim() || null;
+
+        try {
+            if (date) {
+                date = formatDate(date) //check if date was provided, then attempt to format it to YYYY-MM-DD
+            }
+        } catch (err) {
+            return res.status(400).json({
+                status: false,
+                error: {
+                    message: 'The date you provided is invalid'
+                }
+            })
+        }
+
+        // Construct the SQL query
+        const query = `
+            SELECT donation_id, amount, status, donation_date, username, email
+            FROM donations 
+            INNER JOIN users ON users.user_id = donations.recipient_id WHERE donations.user_id = ?  
+            ${date ? "AND DATE(donation_date) = ?" : ''}`;
+
+        //Query the database
+        const donations = await dbQuery(query, [req.user.user_id, date]);
+
+        //Return the response
+        return res.status(200).json({
+            status: true,
+            data: { donations }
         });
 
     } catch (err) {

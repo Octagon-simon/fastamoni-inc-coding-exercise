@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS donations (
     user_id INT NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     status VARCHAR(10) DEFAULT 'pending',
-    donation_date DATE DEFAULT CURRENT_DATE,
+    donation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     recipient_id INT NOT NULL, -- Opposite of donor_id which is our user_id, representing the recipient of the donation
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (recipient_id) REFERENCES users(user_id)
