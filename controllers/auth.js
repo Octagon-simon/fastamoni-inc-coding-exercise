@@ -50,6 +50,7 @@ const createWallet = async (user_id) => {
     }
 }
 
+//create route for user signup
 authRouter.post('/signup', async (req, res) => {
 
     try {
@@ -134,6 +135,7 @@ authRouter.post('/signup', async (req, res) => {
     }
 });
 
+//create route for user login
 authRouter.post('/login', async (req, res) => {
     try {
 

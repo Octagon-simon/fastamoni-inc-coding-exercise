@@ -1,0 +1,23 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 30
+      arrivalRate: 100
+scenarios:
+  - flow:
+      - get:
+          url: "/"
+      - post:
+          url: "/api/auth/signup"
+          json:
+            username: "octagon"
+            email : "octagon@gmail.com"
+            password: "12345678"
+      - post:
+          url: "/api/auth/login"
+          json:
+            email : "octagon@gmail.com"
+            password: "12345678"
+defaults:
+  headers:
+    User-Agent: "Artillery"
