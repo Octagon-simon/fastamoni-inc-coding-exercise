@@ -14,7 +14,7 @@ Clone or download this repo into your local machine and follow the instructions 
 
 - Run `npm install` to install the dependencies
 
-- Start the server with `npm run start` and make a call to `http:127.0.0.1:5000` n your browser to confirm if installation is successful.
+- Start the server with `npm run start` and make a call to `http://127.0.0.1:5000` in your browser to confirm if installation is successful.
 
 Below you can see the available endpoints and what they do.
 
