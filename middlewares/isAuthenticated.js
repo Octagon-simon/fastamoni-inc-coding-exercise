@@ -4,14 +4,14 @@ import dbQuery from "../utils/db.js";
 
 export default async (req, res, next) => {
     try {
-        //get the authToken
-        const authToken = req.headers.authorization ? req.headers.authorization.split(" ")[1] : null;
+        //get the accessToken
+        const accessToken = req.headers.authorization ? req.headers.authorization.split(" ")[1] : null;
 
-        //check if the authToken exists
-        if (authToken) {
+        //check if the accessToken exists
+        if (accessToken) {
 
-            //validate authToken
-            const { user_id } = Jwt.verify(authToken, process.env.JWT_SECRET) ?? {};
+            //validate accessToken
+            const { user_id } = Jwt.verify(accessToken, process.env.JWT_SECRET) ?? {};
 
             //Now query the User's document
             const user = await dbQuery('SELECT * FROM users WHERE user_id = ? LIMIT 1', [user_id])
@@ -38,7 +38,7 @@ export default async (req, res, next) => {
         }
     } catch (error) {
         if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
-            // Handle the expired authToken error & other validation errors
+            // Handle the expired accessToken error & other validation errors
             return res.status(401).json({
                 success: false,
                 error: {

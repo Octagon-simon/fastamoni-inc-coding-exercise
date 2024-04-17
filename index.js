@@ -14,7 +14,7 @@ const app = express();
 //configure app to parse request as JSON
 app.use(json());
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
     res.status(200).json({
         success : true,
         message: 'Hello, Planet Earth!'
@@ -32,10 +32,6 @@ app.use('/api/wallets/', walletRouter);
 
 //configure donations route
 app.use('/api/donations/', donationRouter);
-
-app.get('/', (req, res) => {
-    res.send('Hello Planet Earth!');
-});
 
 app.listen(5000, () => {
     console.log('Example app listening on port 5000!');

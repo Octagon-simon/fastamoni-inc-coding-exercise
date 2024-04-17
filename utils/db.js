@@ -1,11 +1,15 @@
 import mysql from 'mysql'
 import util from 'util'
+import dotenv from 'dotenv';
+
+//configure env variables
+dotenv.config();
 
 const connection = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'octagon',
-    password: 'octagon',
-    database: 'fastMoni'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 // Convert connection.query to use promises

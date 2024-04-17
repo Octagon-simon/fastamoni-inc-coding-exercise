@@ -194,13 +194,13 @@ authRouter.post('/login', async (req, res) => {
         }
 
         //sign JWT and send back to the user
-        const token = Jwt.sign({ user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const accessToken = Jwt.sign({ user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         return res.status(200).json({
             success: true,
             message: 'You are now logged in',
             data: {
-                authToken: token
+                accessToken
 
             }
         });
