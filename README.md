@@ -83,3 +83,7 @@ Import the collection `fastaMoni.postman_collection.json` into POSTMAN and follo
 - MySQL
 - JWT (for authentication)
 - Artillery (for testing)
+
+## THE EXERCISE
+
+Please use [this link](https://github.com/Fastamoni/backend-test) to learn more about the exercise.
