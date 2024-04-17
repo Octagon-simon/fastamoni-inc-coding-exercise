@@ -1,7 +1,11 @@
 import fs from 'fs';
 import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
 
-// Function to log errors
+/**
+ * This Function logs errors to a log file in /logs/error.log
+ * @param {*} error 
+ */
 function logError(error) {
     try {
         // Extract error information
@@ -77,9 +81,51 @@ const formatDate = (inputDate) => {
         throw new Error(e)
     }
 }
+
+/**
+ * This utility function is used to send email messages
+ * @param {Object} data 
+ * @returns String
+ */
+async function sendEmail(data) {
+    try {
+        
+        //destructure
+        const { emailSubject, recipientEmail, emailBody } = data;
+
+        if (!recipientEmail) return false;
+
+        const transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: 465,
+            //   secure: true,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
+
+        //confugure email options
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            replyTo: process.env.EMAIL_USER,
+            to: recipientEmail,
+            subject: emailSubject,
+            html: emailBody
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+
+        return info.response;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export {
     compareHashedUserInput,
     formatDate,
     hashUserInput,
-    logError
+    logError,
+    sendEmail
 }

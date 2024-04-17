@@ -1,6 +1,6 @@
 import { Router } from "express";
 import dbQuery from "../utils/db.js";
-import { compareHashedUserInput, formatDate, logError } from "../core/functions.js";
+import { compareHashedUserInput, formatDate, logError, sendEmail } from "../core/functions.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 
 //create new routes for authentication
@@ -8,6 +8,27 @@ const donationRouter = Router();
 
 //user must be logged in
 donationRouter.use(isAuthenticated);
+
+//function to check if user has made at least 2 donations so we can thank them
+const checkDonations = async (user_id) => {
+    try {
+
+        //check if userId was provided
+        if (typeof user_id == 'undefined') throw new Error("A valid user_id must be provided");
+
+        //get user's donations
+        const donations = await dbQuery('SELECT * FROM donations WHERE user_id = ?', [user_id]);
+
+        //check if user has made at least 2 donations
+        if (donations.length >= 2) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (err) {
+        throw err;
+    }
+}
 
 //create route for donation
 donationRouter.post('/create', async (req, res) => {
@@ -154,10 +175,21 @@ donationRouter.post('/create', async (req, res) => {
             });
         }
 
-        return res.status(200).json({
+        //return an early response
+        res.status(200).json({
             status: true,
             message: 'Your donation has been created successfully'
         });
+
+        //check if user has made at least 2 donations
+        if(checkDonations(req.user.user_id)){
+            //send email to user and thank them for the donation
+            sendEmail({
+                recipientEmail : req.user.email,
+                emailSubject: "Thank you for your donation",
+                emailBody: `Hello ${req.user.username}, thank you for your donation of ${amount} to ${email}.`
+            })
+        }
 
     } catch (err) {
         logError(err);
@@ -197,11 +229,12 @@ donationRouter.get('/totalDonations', async (req, res) => {
     }
 })
 
+//create route to get all donations 
 donationRouter.get('/getDonations', async (req, res) => {
     try {
 
         //destructure query parameters
-        let { date } = req.query;        //2024-04-17
+        let { date } = req.query; //2024-04-17
 
         //sanitize param
         date = date?.trim() || null;
@@ -229,10 +262,12 @@ donationRouter.get('/getDonations', async (req, res) => {
         //Query the database
         const donations = await dbQuery(query, [req.user.user_id, date]);
 
-        //Return the response
+        //return response
         return res.status(200).json({
             status: true,
-            data: { donations }
+            data: {
+                donations
+            }
         });
 
     } catch (err) {
@@ -246,4 +281,52 @@ donationRouter.get('/getDonations', async (req, res) => {
     }
 })
 
+//create route to get single donation
+donationRouter.get('/getDonation', async (req, res) => {
+    try {
+
+        //destructure query parameters
+        let { donation_id } = req.query
+
+        //sanitize param
+        donation_id = Number(donation_id || 0);
+
+        //check if donation_id is provided and is valid
+        if (!donation_id) {
+            return res.status(400).json({
+                status: false,
+                error: {
+                    message: 'Please provide a valid donation id'
+                }
+            })
+        }
+
+        //get donation from db
+        const donation = await dbQuery('SELECT donation_id, amount, status, donation_date, username, email FROM donations INNER JOIN users ON users.user_id = donations.recipient_id WHERE donations.donation_id = ? LIMIT 1', [donation_id]);
+
+        //get response from db
+        const { amount, status, donation_date, username, email } = donation?.[0] || {}
+
+        return res.status(200).json({
+            status: true,
+            data: {
+                donation_id,
+                amount,
+                status,
+                donation_date: formatDate(donation_date),
+                username,
+                email
+            }
+        });
+
+    } catch (err) {
+        logError(err);
+        return res.status(500).json({
+            success: false,
+            error: {
+                message: "A server error has occured, please contact support"
+            }
+        })
+    }
+})
 export default donationRouter;
