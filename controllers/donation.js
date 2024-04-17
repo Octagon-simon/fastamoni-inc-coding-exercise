@@ -182,13 +182,17 @@ donationRouter.post('/create', async (req, res) => {
         });
 
         //check if user has made at least 2 donations
-        if(checkDonations(req.user.user_id)){
-            //send email to user and thank them for the donation
-            sendEmail({
-                recipientEmail : req.user.email,
-                emailSubject: "Thank you for your donation",
-                emailBody: `Hello ${req.user.username}, thank you for your donation of ${amount} to ${email}.`
-            })
+        if (checkDonations(req.user.user_id)) {
+            try {
+                //send email to user and thank them for the donation
+                await sendEmail({
+                    recipientEmail: req.user.email,
+                    emailSubject: "Thank you for your donation",
+                    emailBody: `Hello ${req.user.username}, thank you for your donation of ${amount} to ${email}.`
+                })
+            } catch (err) {
+                logError(err);
+            }
         }
 
     } catch (err) {
@@ -203,7 +207,7 @@ donationRouter.post('/create', async (req, res) => {
 })
 
 //create route to get total donations
-donationRouter.get('/totalDonations', async (req, res) => {
+donationRouter.get('/total', async (req, res) => {
     try {
 
         const totalDonations = await dbQuery('SELECT COUNT(*) as total FROM donations WHERE user_id = ?', [req.user.user_id]);
@@ -230,11 +234,11 @@ donationRouter.get('/totalDonations', async (req, res) => {
 })
 
 //create route to get all donations 
-donationRouter.get('/getDonations', async (req, res) => {
+donationRouter.get('/getAll', async (req, res) => {
     try {
 
         //destructure query parameters
-        let { date } = req.query; //2024-04-17
+        let { date, pageNumber, pageSize } = req.query; //2024-04-17
 
         //sanitize param
         date = date?.trim() || null;
@@ -252,21 +256,46 @@ donationRouter.get('/getDonations', async (req, res) => {
             })
         }
 
-        // Construct the SQL query
+        //convert pageSize param to number
+        const pageSizeNumber = Number(pageSize);
+        //calculate the offset
+        const offset = (pageNumber - 1) * pageSizeNumber;
+
+        //construct the SQL query with pagination
         const query = `
-            SELECT donation_id, amount, status, donation_date, username, email
+            SELECT  donation_id, amount, status, donation_date, username, email
             FROM donations 
-            INNER JOIN users ON users.user_id = donations.recipient_id WHERE donations.user_id = ?  
+            INNER JOIN users ON users.user_id = donations.recipient_id WHERE donations.user_id = ? 
+            ${date ? "AND DATE(donations.donation_date) = ?" : ''}
+            LIMIT ?, ?`;
+
+        //query the database
+        const donations = await dbQuery(query, [req.user.user_id, date, offset, pageSizeNumber]);
+
+        //construct the SQL query to count total records
+        const countQuery = `
+            SELECT COUNT(*) AS totalRecords
+            FROM donations 
+            WHERE user_id = ? 
             ${date ? "AND DATE(donation_date) = ?" : ''}`;
 
-        //Query the database
-        const donations = await dbQuery(query, [req.user.user_id, date]);
+        //query the database to count total records
+        const countResult = await dbQuery(countQuery, [req.user.user_id, date]);
+        const totalRecords = countResult[0].totalRecords;
+
+        //calculate the total number of pages
+        const totalPages = Math.ceil(totalRecords / pageSize);
 
         //return response
         return res.status(200).json({
             status: true,
             data: {
-                donations
+                donations,
+                pagination: {
+                    currentPage: pageNumber,
+                    pageSize,
+                    totalPages
+                }
             }
         });
 
@@ -282,7 +311,7 @@ donationRouter.get('/getDonations', async (req, res) => {
 })
 
 //create route to get single donation
-donationRouter.get('/getDonation', async (req, res) => {
+donationRouter.get('/getSingle', async (req, res) => {
     try {
 
         //destructure query parameters
@@ -329,4 +358,5 @@ donationRouter.get('/getDonation', async (req, res) => {
         })
     }
 })
+
 export default donationRouter;

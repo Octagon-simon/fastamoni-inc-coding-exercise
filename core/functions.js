@@ -89,7 +89,6 @@ const formatDate = (inputDate) => {
  */
 async function sendEmail(data) {
     try {
-        
         //destructure
         const { emailSubject, recipientEmail, emailBody } = data;
 
@@ -118,7 +117,7 @@ async function sendEmail(data) {
 
         return info.response;
     } catch (error) {
-        throw error;
+        throw new Error(error)
     }
 }
 
