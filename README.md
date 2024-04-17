@@ -4,7 +4,9 @@ The goal of this project is to access my proficiency in software engineering tha
 
 ## INSTALLATION
 
-Clone or download this repo into your local machine and follow the instructions below to configure the server;
+Clone or download this repo into your local machine and follow the instructions below to configure the server or you can use this link to view the project `https://fastamoni-inc-coding-exercise.onrender.com`
+
+> Please note that the LIVE URL might not still be active when you visit this project some time in the future. As at now 17/04/2024, it is active.
 
 - Import `schema.sql` into your SQL server to create the Database and necessary Tables
 
