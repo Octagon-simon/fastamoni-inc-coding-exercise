@@ -4,9 +4,9 @@ import nodemailer from 'nodemailer';
 
 /**
  * This Function logs errors to a log file in /logs/error.log
- * @param {*} error 
+ * @param {string} error 
  */
-function logError(error) {
+const logError = (error) => {
     try {
         // Extract error information
         const errorMessage = `${new Date().toISOString()} - ${error?.message ?? error}\n${error?.stack ?? ''}\n`;
@@ -27,6 +27,7 @@ function logError(error) {
 /**
  * This function is responsible for hashing any credentials
  * @param {string} userInput
+ * @param {number} saltRounds
  * @returns String
  */
 const hashUserInput = async (userInput, saltRounds = 10) => {
@@ -63,8 +64,8 @@ const compareHashedUserInput = async (userInput, hashedString) => {
 
 /**
  * This function formats date to 'YYYY-MM-DD'
- * @param {*} inputDate 
- * @returns 
+ * @param {string} inputDate 
+ * @returns string
  */
 const formatDate = (inputDate) => {
     try {
@@ -84,10 +85,10 @@ const formatDate = (inputDate) => {
 
 /**
  * This utility function is used to send email messages
- * @param {Object} data 
+ * @param {object} data 
  * @returns String
  */
-async function sendEmail(data) {
+const sendEmail = async (data) => {
     try {
         //destructure
         const { emailSubject, recipientEmail, emailBody } = data;
